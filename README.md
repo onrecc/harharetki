@@ -2,9 +2,9 @@
 
 **Navigaattori, joka eksyttää sinut tarkoituksella.**
 
-🔗 **Kokeile heti selaimessa: https://loytoretki-beta.vercel.app**
+🔗 **Kokeile heti selaimessa: https://harharetki.saarikko.dev**
 
-🧭 **Valmis esimerkkiretki yhdellä klikkauksella:** [Rautatientori → Kaivopuisto, historiaretki](https://loytoretki-beta.vercel.app/?a=60.17070,24.94310&an=Rautatientori&b=60.15760,24.95670&bn=Kaivopuisto&tyyli=historic&taso=3)
+🧭 **Valmis esimerkkiretki yhdellä klikkauksella:** [Rautatientori → Kaivopuisto, historiaretki](https://harharetki.saarikko.dev/?a=60.17070,24.94310&an=Rautatientori&b=60.15760,24.95670&bn=Kaivopuisto&tyyli=historic&taso=3)
 
 Softamestari 2026 -esikarsinnan työ (Junnusarja), teemana *Löytöretki*.
 
@@ -64,7 +64,7 @@ Sovellus toimii kokonaan selaimessa. Omaa palvelinta, tietokantaa tai taustajär
 - **Nopea testipolku:** valitse aloitusnäytöltä *Kävellen* ja *Demotila* → napauta kartalta kaksi pistettä Helsingin keskustasta → *Historia*, taso 3 → *Kävele reitti*.
 - **Valmis esimerkkiretki:** http://localhost:3000/?a=60.17070,24.94310&an=Rautatientori&b=60.15760,24.95670&bn=Kaivopuisto&tyyli=historic&taso=3
 - **Puhelimella samassa Wi-Fi-verkossa:** käynnistä `npm run dev -- -H 0.0.0.0` ja avaa puhelimella `http://<koneen IP-osoite>:3000`. Kehityspalvelin sallii koneen omat verkko-osoitteet automaattisesti.
-- **Live-testi (GPS) puhelimella vaatii HTTPS-yhteyden.** Selaimet eivät anna sijaintia http-osoitteelle, joten lähiverkon `http://<IP>:3000`-osoitteessa GPS ei toimi lainkaan (sovellus kertoo tästä ja ohjaa Demotilaan). Kokeile Live-testiä puhelimella julkaistulla sivulla **https://loytoretki-beta.vercel.app**, tai käytä https-tunnelia. Tietokoneella `http://localhost:3000` toimii, koska localhost lasketaan suojatuksi.
+- **Live-testi (GPS) puhelimella vaatii HTTPS-yhteyden.** Selaimet eivät anna sijaintia http-osoitteelle, joten lähiverkon `http://<IP>:3000`-osoitteessa GPS ei toimi lainkaan (sovellus kertoo tästä ja ohjaa Demotilaan). Kokeile Live-testiä puhelimella julkaistulla sivulla **https://harharetki.saarikko.dev**, tai käytä https-tunnelia. Tietokoneella `http://localhost:3000` toimii, koska localhost lasketaan suojatuksi.
 - **Data:** Helsingin keskustan reitit lasketaan mukana tulevasta aineistosta, joten ne eivät riipu ruuhkaisista Overpass-palvelimista. Muualla sovellus käyttää OpenStreetMapin, Valhallan ja Wikipedian julkisia rajapintoja, joten testikoneella pitää olla verkkoyhteys (myös karttatiilet ladataan verkosta).
 
 ## Miten se toimii
@@ -124,4 +124,4 @@ Koodi on kilpailun sääntöjen mukaisesti vapaasti käytettävissä (public dom
 
 Pick a *wander level* from 1 to 5, or 11 if you really want to get lost, and travel on foot or by car. Short trips use the in-browser engine. Long trips use Valhalla (OSM routing) plus an Overpass corridor search, so there is no distance limit. Historic buildings along the route glow as you zoom in, labelled with their construction years.
 
-Run it with `pnpm install && pnpm dev` (or `npm install && npm run dev`), then open http://localhost:3000. Live version: https://loytoretki-beta.vercel.app
+Run it with `pnpm install && pnpm dev` (or `npm install && npm run dev`), then open http://localhost:3000. Live version: https://harharetki.saarikko.dev
