@@ -1,0 +1,1478 @@
+/* Adventure flow panel: bottom sheet on mobile, floating card top-left on desktop. Uses globals.css tokens. */
+
+.flow-panel {
+  position: absolute;
+  z-index: 20;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 72dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.5rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  border-radius: 1.5rem 1.5rem 0 0;
+  /* Near-opaque so the map never makes the form hard to read. */
+  background: #fffdf8;
+  background: color-mix(in srgb, var(--paper, #fffdf8) 97%, transparent);
+  color: var(--ink, #14232c);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  border: 1px solid var(--line, rgba(20, 35, 44, 0.12));
+  border-bottom: 0;
+  box-shadow: var(--shadow-panel, 0 24px 48px -16px rgba(15, 47, 63, 0.28));
+  animation: flow-sheet-in 520ms cubic-bezier(0.2, 0.9, 0.25, 1.15) both;
+}
+@media (min-width: 768px) {
+  .flow-panel {
+    inset: 1rem auto auto 1rem;
+    width: 380px;
+    max-height: calc(100dvh - 2rem);
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+    border-bottom: 1px solid var(--line);
+    animation-name: flow-card-in;
+  }
+}
+
+.flow-handle {
+  align-self: center;
+  width: 2.5rem;
+  height: 0.3rem;
+  border-radius: 9999px;
+  background: var(--line);
+}
+@media (min-width: 768px) {
+  .flow-handle {
+    display: none;
+  }
+}
+
+.flow-logo {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.75rem;
+  background: var(--sea-deep);
+  color: var(--gold);
+  flex: none;
+}
+
+.flow-title {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.375rem;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.flow-step {
+  animation: flow-step-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.flow-cta {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.95rem;
+  background: var(--sea-deep);
+  padding: 0 1.25rem;
+  font-weight: 650;
+  font-size: 1rem;
+  color: white;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.15) inset, 0 8px 18px -8px rgb(15 47 63 / 0.7);
+  transition: background-color 150ms, transform 150ms, opacity 150ms;
+}
+.flow-cta:hover:not(:disabled) {
+  background: #0a2330;
+}
+.flow-cta:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.flow-cta:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.flow-secondary,
+.flow-ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.8rem;
+  font-weight: 550;
+  color: var(--ink);
+  transition: background-color 150ms;
+}
+.flow-secondary {
+  min-height: 3rem;
+  padding: 0 1rem;
+  border: 1px solid var(--line);
+  background: white;
+}
+.flow-secondary:hover {
+  background: var(--sand);
+}
+.flow-ghost-btn {
+  min-height: 2.25rem;
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+.flow-ghost-btn:hover {
+  background: var(--sand-deep);
+  color: var(--ink);
+}
+
+/* Launch: compass spins up inside expanding sonar rings. */
+.flow-launch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0 0.75rem;
+  text-align: center;
+}
+.flow-launch-rings {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 7rem;
+  height: 7rem;
+}
+.flow-launch-rings span {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid var(--sea);
+  opacity: 0;
+  animation: flow-sonar 1.3s ease-out infinite;
+}
+.flow-launch-rings span:nth-child(2) {
+  animation-delay: 0.3s;
+}
+.flow-launch-rings span:nth-child(3) {
+  animation-delay: 0.6s;
+}
+.flow-launch-compass {
+  width: 4rem;
+  height: 4rem;
+  filter: drop-shadow(0 6px 10px rgb(15 47 63 / 0.25));
+  animation: flow-compass 1.3s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+
+/* Style choice cards. */
+.flow-option {
+  --accent: var(--sea);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border-radius: 1rem;
+  border: 1.5px solid var(--line);
+  background: white;
+  transition: border-color 150ms, box-shadow 150ms, transform 150ms;
+  animation: flow-option-in 480ms cubic-bezier(0.2, 0.9, 0.25, 1.2) both;
+}
+.flow-option:hover {
+  border-color: var(--accent);
+  box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 70%, transparent);
+  transform: translateY(-1px);
+}
+.flow-option:active {
+  transform: scale(0.985);
+}
+.flow-option-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.85rem;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 13%, white);
+}
+
+/* Loading: a trail draws itself while a dot runs along it. */
+.flow-loading {
+  --accent: var(--sea);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0 0.5rem;
+  text-align: center;
+}
+.flow-trail-bg {
+  stroke: var(--line);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 1 9;
+}
+.flow-trail {
+  stroke: var(--accent);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: flow-draw 1.8s cubic-bezier(0.55, 0.1, 0.35, 1) infinite;
+}
+.flow-trail-dot {
+  fill: var(--accent);
+  stroke: white;
+  stroke-width: 2.5;
+  offset-path: path("M14 52C50 52 52 14 92 18s40 38 78 34 42-30 56-34");
+  animation: flow-run 1.8s cubic-bezier(0.55, 0.1, 0.35, 1) infinite;
+}
+.flow-stage {
+  animation: flow-step-in 300ms ease both;
+}
+
+/* Result. */
+.flow-chip {
+  --accent: var(--sea);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 650;
+  color: color-mix(in srgb, var(--accent) 80%, black);
+  background: color-mix(in srgb, var(--accent) 14%, white);
+}
+.flow-chip::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: var(--accent);
+}
+.flow-midstop {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border-radius: 1rem;
+  background: var(--foam);
+  border: 1px solid color-mix(in srgb, var(--sea) 18%, transparent);
+  transition: background-color 300ms, border-color 300ms;
+}
+.flow-midstop--reached {
+  background: color-mix(in srgb, var(--gold) 18%, white);
+  border-color: var(--gold);
+  animation: flow-pop 420ms cubic-bezier(0.2, 0.9, 0.25, 1.4);
+}
+.flow-midstop-badge {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  background: var(--sea-deep);
+  color: white;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+@keyframes flow-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+@keyframes flow-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+}
+@keyframes flow-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(3px);
+  }
+}
+@keyframes flow-option-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+}
+@keyframes flow-sonar {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.45);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+}
+@keyframes flow-compass {
+  0% {
+    transform: rotate(-200deg) scale(0.4);
+    opacity: 0;
+  }
+  70% {
+    transform: rotate(20deg) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(0) scale(1);
+  }
+}
+@keyframes flow-draw {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  80%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes flow-run {
+  0% {
+    offset-distance: 0%;
+  }
+  80%,
+  100% {
+    offset-distance: 100%;
+  }
+}
+@keyframes flow-pop {
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-panel,
+  .flow-step,
+  .flow-stage,
+  .flow-option,
+  .flow-midstop--reached,
+  .flow-launch-compass,
+  .flow-launch-rings span {
+    animation: none;
+  }
+  .flow-trail {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .flow-trail-dot {
+    animation: none;
+    offset-distance: 50%;
+  }
+}
+
+/* Adventure vs fastest route legend. */
+.flow-legend {
+  --accent: var(--sea);
+  display: flex;
+  gap: 1.25rem;
+  font-size: 0.875rem;
+}
+.flow-legend > div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+.flow-legend dt {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ink-soft);
+}
+.flow-legend dd {
+  font-weight: 650;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.flow-legend-line {
+  width: 1.4rem;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--accent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.flow-legend-line--fast {
+  height: 0;
+  border-top: 2.5px dashed #8a8f96;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Wander dial: rising volume bars 1–5, plus a hot "11". */
+.flow-dial {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) 1.25fr;
+  align-items: end;
+  gap: 0.35rem;
+}
+.flow-dial-step {
+  --h: 2rem;
+  height: var(--h);
+  min-height: 2.75rem;
+  border-radius: 0.6rem;
+  border: 1.5px solid var(--line);
+  background: white;
+  color: var(--ink-soft);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 150ms, color 150ms, border-color 150ms, transform 150ms;
+}
+.flow-dial-step:nth-child(1) { --h: 2.75rem; }
+.flow-dial-step:nth-child(2) { --h: 3rem; }
+.flow-dial-step:nth-child(3) { --h: 3.25rem; }
+.flow-dial-step:nth-child(4) { --h: 3.5rem; }
+.flow-dial-step:nth-child(5) { --h: 3.75rem; }
+.flow-dial-step:nth-child(6) { --h: 4.25rem; }
+.flow-dial-step:hover {
+  border-color: var(--sea);
+}
+.flow-dial-step.is-filled {
+  background: color-mix(in srgb, var(--sea) 16%, white);
+  border-color: color-mix(in srgb, var(--sea) 35%, transparent);
+  color: var(--sea-deep);
+}
+.flow-dial-step.is-on {
+  background: var(--sea-deep);
+  border-color: var(--sea-deep);
+  color: white;
+  transform: translateY(-2px);
+}
+.flow-dial-step--eleven {
+  font-size: 1.05rem;
+  color: var(--coral);
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--coral) 55%, transparent);
+}
+.flow-dial-step--eleven.is-on {
+  background: linear-gradient(160deg, #f0a03a, var(--coral) 60%, #b8322a);
+  border: 0;
+  color: white;
+  box-shadow: 0 8px 20px -8px var(--coral);
+  animation: flow-eleven 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+/* At 11 the whole dial runs hot. */
+.flow-dial:has(.flow-dial-step--eleven.is-on) .flow-dial-step.is-filled:not(.flow-dial-step--eleven) {
+  background: color-mix(in srgb, var(--coral) 18%, white);
+  border-color: color-mix(in srgb, var(--coral) 40%, transparent);
+  color: #9a2f1f;
+}
+@keyframes flow-eleven {
+  0% { transform: scale(0.9) rotate(-4deg); }
+  50% { transform: scale(1.08) rotate(3deg); }
+  100% { transform: translateY(-2px); }
+}
+
+/* Stop list in the result card. */
+.flow-stops {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.flow-stop-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  border-radius: 0.75rem;
+  text-align: left;
+  transition: background-color 150ms;
+}
+.flow-stop-row:hover {
+  background: var(--sand);
+}
+.flow-stop-row .flow-midstop-badge {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.75rem;
+}
+.flow-stop-row.is-reached .flow-midstop-badge {
+  background: var(--gold);
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow-dial-step--eleven.is-on {
+    animation: none;
+  }
+}
+
+/* Keep the result actions reachable however long the stop list gets. */
+.flow-actions {
+  position: sticky;
+  bottom: calc(-1rem - env(safe-area-inset-bottom));
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0 -1rem calc(-1rem - env(safe-area-inset-bottom));
+  padding: 0.75rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, transparent, var(--paper, #fffdf8) 0.75rem);
+}
+@media (min-width: 768px) {
+  .flow-actions {
+    bottom: -1.25rem;
+    margin: 0 -1.25rem -1.25rem;
+    padding: 0.75rem 1.25rem 1.25rem;
+  }
+}
+
+/* Result stats: three aligned columns, swatch + label on top, value below. */
+.flow-stats {
+  --accent: var(--sea);
+  display: grid;
+  grid-template-columns: 1.15fr 1.15fr 1fr 0.6fr;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.9rem;
+  background: var(--sand);
+}
+.flow-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.flow-stats dt {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 1rem;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+.flow-stats dt .flow-legend-line {
+  width: 1rem;
+}
+.flow-stats dd {
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Wander level badge. */
+.flow-wander-badge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.6rem 0.35rem 0.5rem;
+  border-radius: 0.8rem;
+  background: var(--sea-deep);
+  color: white;
+}
+.flow-wander-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 18px;
+}
+.flow-wander-bars > span {
+  width: 3px;
+  border-radius: 2px;
+  background: rgb(255 255 255 / 0.25);
+}
+.flow-wander-bars > span.is-on {
+  background: var(--gold);
+}
+.flow-wander-num {
+  font-size: 1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.flow-wander-label {
+  margin-top: 2px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+.flow-wander-badge--eleven {
+  background: linear-gradient(110deg, #e0573e, #f0a03a, #d14fa0, #7b4fd6, #e0573e);
+  background-size: 300% 100%;
+  animation: flow-hot 3s linear infinite, flow-eleven 0.6s cubic-bezier(0.3, 1.6, 0.5, 1);
+  box-shadow: 0 6px 18px -6px #e0573e;
+}
+.flow-wander-badge--eleven .flow-wander-bars > span {
+  background: white;
+  animation: flow-bar 0.5s ease-in-out infinite alternate;
+}
+.flow-wander-badge--eleven .flow-wander-bars > span:nth-child(2) { animation-delay: 0.1s; }
+.flow-wander-badge--eleven .flow-wander-bars > span:nth-child(3) { animation-delay: 0.2s; }
+.flow-wander-badge--eleven .flow-wander-bars > span:nth-child(4) { animation-delay: 0.3s; }
+.flow-wander-badge--eleven .flow-wander-bars > span:nth-child(5) { animation-delay: 0.4s; }
+@keyframes flow-hot {
+  to { background-position: 300% 0; }
+}
+@keyframes flow-bar {
+  to { transform: scaleY(0.4); transform-origin: bottom; }
+}
+
+/* Stop card: big image, slides in whenever the next stop changes. */
+.flow-stop-card {
+  animation: flow-stop-in 380ms cubic-bezier(0.2, 0.9, 0.25, 1.1) both;
+}
+.flow-stop-img {
+  flex: none;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 0.85rem;
+  object-fit: cover;
+  background: var(--sand-deep);
+}
+.flow-stop-img--empty {
+  display: grid;
+  place-items: center;
+  background: var(--sea-deep);
+  color: var(--gold);
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+.flow-stop-row.is-current {
+  background: var(--sand);
+}
+@keyframes flow-stop-in {
+  from { opacity: 0; transform: translateX(16px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow-wander-badge--eleven,
+  .flow-wander-badge--eleven .flow-wander-bars > span,
+  .flow-stop-card {
+    animation: none;
+  }
+}
+
+/* Map credits inside the sheet on phones (desktop keeps MapLibre's attribution control). */
+.flow-credits {
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: var(--ink-faint);
+  text-align: center;
+}
+.flow-credits a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+@media (min-width: 768px) {
+  .flow-credits {
+    display: none;
+  }
+}
+
+/* Phones: once the route is shown, keep most of the screen for the map. */
+@media (max-width: 767px) {
+  .flow-panel--result {
+    max-height: 55dvh;
+  }
+}
+
+/* Level cell in the stats bar; at 11 it runs hot. */
+.flow-stats > div:last-child dd {
+  font-size: 1.15rem;
+  line-height: 1.1;
+  font-weight: 800;
+}
+.flow-stat-level--eleven dd {
+  background: linear-gradient(110deg, #e0573e, #f0a03a, #d14fa0, #7b4fd6, #e0573e);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+  animation: flow-hot 3s linear infinite;
+}
+
+/* Phones: in the result the stats bar leads, so drop the brand header. */
+@media (max-width: 767px) {
+  .flow-header--result {
+    display: none;
+  }
+}
+
+/* Result card: full-width image, then the description. */
+.flow-stop-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--line);
+  background: white;
+}
+.flow-hero {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: var(--sand-deep);
+}
+.flow-hero img {
+  /* Absolute so the photo's own size can't stretch the box past its aspect ratio. */
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: flow-fade 400ms ease both;
+}
+.flow-hero-empty {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--sea) 55%, var(--sea-deep)), var(--sea-deep));
+  color: var(--gold);
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 3rem;
+  font-weight: 700;
+}
+.flow-hero-count {
+  position: absolute;
+  left: 0.6rem;
+  top: 0.6rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  background: rgb(15 47 63 / 0.75);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  backdrop-filter: blur(4px);
+}
+.flow-hero-nav {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.88);
+  color: var(--ink);
+  font-size: 1.4rem;
+  line-height: 1;
+  box-shadow: 0 2px 8px rgb(15 47 63 / 0.25);
+  transition: background-color 150ms;
+}
+.flow-hero-nav:hover {
+  background: white;
+}
+.flow-hero-nav--prev {
+  left: 0.5rem;
+}
+.flow-hero-nav--next {
+  right: 0.5rem;
+}
+.flow-desc {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.8rem 0.9rem 0.9rem;
+}
+.flow-desc-label {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+.flow-desc-title {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.flow-desc-text {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--ink-soft);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.flow-desc-link {
+  margin-top: 0.15rem;
+  font-size: 0.875rem;
+  font-weight: 550;
+  color: var(--sea);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+@keyframes flow-fade {
+  from { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow-hero img,
+  .flow-stat-level--eleven dd {
+    animation: none;
+  }
+}
+@media (max-width: 767px) {
+  .flow-panel--result {
+    max-height: 60dvh;
+  }
+  .flow-hero {
+    aspect-ratio: 2.3 / 1;
+  }
+}
+
+/* Stop list (visible when the sheet is expanded / scrolled). */
+.flow-stop-thumb {
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.6rem;
+  object-fit: cover;
+  background: var(--sand-deep);
+}
+.flow-stop-thumb--empty {
+  display: grid;
+  place-items: center;
+  background: var(--sea-deep);
+  color: var(--gold);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+/* Draggable phone bottom sheet: peek (buttons only) · half · full. */
+.flow-handle-zone {
+  display: flex;
+  justify-content: center;
+  align-self: stretch;
+  flex: none;
+  margin: -0.5rem -1rem -0.5rem;
+  padding: 0.6rem 0 0.7rem;
+  touch-action: none;
+  cursor: grab;
+}
+.flow-handle-zone:active {
+  cursor: grabbing;
+}
+.flow-handle-zone:focus-visible {
+  outline-offset: -4px;
+}
+.flow-handle-zone .flow-handle {
+  transition: width 150ms, background-color 150ms;
+}
+.flow-handle-zone:hover .flow-handle,
+.is-dragging .flow-handle {
+  width: 3.25rem;
+  background: var(--ink-faint);
+}
+@media (min-width: 768px) {
+  .flow-handle-zone {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .flow-panel {
+    /* Slight overshoot so the snap feels physical. */
+    transition: height 280ms cubic-bezier(0.25, 1.15, 0.4, 1), max-height 280ms cubic-bezier(0.25, 1.15, 0.4, 1);
+  }
+  .flow-panel.is-dragging {
+    transition: none;
+  }
+  .flow-panel.flow-sheet-peek {
+    height: 168px;
+    max-height: 168px;
+  }
+  .flow-sheet-peek header,
+  .flow-sheet-peek .flow-collapsible {
+    display: none;
+  }
+  .flow-panel.flow-sheet-full {
+    height: 92dvh;
+    max-height: 92dvh;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow-panel {
+    transition: none;
+  }
+}
+
+.flow-restart-mobile {
+  padding: 0 0.85rem;
+}
+
+
+.flow-surprise {
+  gap: 0.5rem;
+  color: var(--coral);
+  border-color: color-mix(in srgb, var(--coral) 35%, transparent);
+}
+.flow-surprise:disabled {
+  opacity: 0.7;
+}
+.flow-share-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -0.25rem;
+}
+
+/* Live (GPS) vs demo. */
+.flow-mode-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  border-radius: 1rem;
+  background: var(--foam);
+  border: 1px solid color-mix(in srgb, var(--sea) 20%, transparent);
+}
+.flow-mode-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.8rem;
+  border: 1.5px solid var(--line);
+  background: white;
+  text-align: left;
+  transition: border-color 150ms;
+}
+.flow-mode-option:hover {
+  border-color: var(--sea);
+}
+.flow-mode-toggle {
+  display: inline-flex;
+  align-self: flex-end;
+  padding: 2px;
+  border-radius: 9999px;
+  background: var(--sand-deep);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.flow-mode-toggle button {
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  color: var(--ink-soft);
+}
+.flow-mode-toggle button.is-on {
+  background: var(--sea-deep);
+  color: white;
+}
+.flow-live-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.8rem;
+  background: color-mix(in srgb, var(--coral) 10%, white);
+  font-size: 0.875rem;
+  color: var(--ink);
+}
+
+.flow-mode-link {
+  align-self: flex-end;
+  font-size: 0.75rem;
+  font-weight: 550;
+  color: var(--ink-faint);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.flow-mode-link:hover {
+  color: var(--ink);
+}
+
+
+/* Welcome screen: a paper panel over the live map (AdventureFlow draws an example trip on it). */
+.wl {
+  --wl-paper: #f4ecdc;
+  --wl-ink: #1b2a33;
+  --wl-coral: #d9533b;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  color: var(--wl-ink);
+}
+.wl-content {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 62dvh;
+  overflow-y: auto;
+  padding: 1.6rem 1.5rem calc(1.25rem + env(safe-area-inset-bottom));
+  border-radius: 1.5rem 1.5rem 0 0;
+  background: var(--wl-paper);
+  box-shadow: 0 -18px 40px -20px rgb(27 42 51 / 0.45);
+  pointer-events: auto;
+  animation: flow-sheet-in 600ms cubic-bezier(0.2, 0.9, 0.25, 1.05) both;
+}
+@media (min-width: 768px) {
+  .wl-content {
+    inset: 0 auto 0 0;
+
+    width: min(50vw, 620px);
+    max-height: none;
+    padding: 3rem clamp(2rem, 5vw, 4.5rem);
+    border-radius: 0;
+    box-shadow: 30px 0 60px -30px rgb(27 42 51 / 0.45);
+    animation-name: wl-slide;
+  }
+}
+@keyframes wl-slide {
+  from {
+    translate: -100% 0;
+  }
+}
+.wl-title {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: clamp(2.9rem, 13vw, 6rem);
+  font-weight: 600;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+}
+.wl-title em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--wl-coral);
+}
+.wl-lede {
+  margin-top: 1.25rem;
+  max-width: 26rem;
+  font-size: 1.02rem;
+  line-height: 1.55;
+  color: #3d4b52;
+}
+.wl-ask {
+  margin-top: 2.5rem;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #7c6a48;
+}
+.wl-options {
+  margin-top: 0.6rem;
+  border-top: 1.5px solid var(--wl-ink);
+}
+.wl-options li {
+  border-bottom: 1px solid rgb(27 42 51 / 0.35);
+}
+.wl-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.05rem 0.25rem 1.1rem;
+  text-align: left;
+  background: transparent;
+  animation: wl-rise 600ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.wl-option:focus-visible {
+  outline: 2px solid var(--wl-coral);
+  outline-offset: 2px;
+}
+.wl-num {
+  flex: none;
+  width: 1.4rem;
+  padding-top: 0.3rem;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--wl-coral);
+  font-variant-numeric: tabular-nums;
+}
+.wl-option-body {
+  flex: 1;
+  min-width: 0;
+}
+.wl-option-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.65rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.wl-last {
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--wl-coral);
+  rotate: -3deg;
+}
+.wl-option-text {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.93rem;
+  line-height: 1.45;
+  color: #4a575d;
+}
+.wl-arrow {
+  align-self: center;
+  font-size: 1.6rem;
+  line-height: 1;
+  transition: translate 200ms cubic-bezier(0.3, 1.5, 0.5, 1), color 150ms;
+}
+.wl-option:hover .wl-arrow,
+.wl-option:focus-visible .wl-arrow {
+  translate: 6px 0;
+  color: var(--wl-coral);
+}
+.wl-option:hover .wl-option-title {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
+  text-decoration-color: var(--wl-coral);
+}
+.wl-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  margin-top: auto;
+  padding-top: 2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: #8a7651;
+}
+@keyframes wl-rise {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wl-content,
+  .wl-option {
+    animation: none;
+  }
+}
+
+/* Live GPS walking: a compact bar that only grows into a stop card while you're at a stop. */
+@media (max-width: 767px) {
+  .flow-panel.flow-sheet-live {
+    height: auto;
+    max-height: 62dvh;
+  }
+}
+.flow-sheet-live .flow-handle-zone {
+  display: none;
+}
+.flow-live {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.flow-live-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.flow-live-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.35rem 0.25rem;
+}
+.flow-live-row + .flow-live-row {
+  border-top: 1px solid var(--line);
+  padding-top: 0.55rem;
+}
+.flow-live-dist {
+  flex: none;
+  font-size: 1.05rem;
+  font-weight: 750;
+  color: var(--sea-deep);
+  font-variant-numeric: tabular-nums;
+}
+.flow-live-here {
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 2px solid var(--gold);
+  background: white;
+  animation: flow-stop-in 380ms cubic-bezier(0.2, 0.9, 0.25, 1.1) both;
+}
+.flow-live-here .flow-desc-text {
+  -webkit-line-clamp: 6;
+}
+.flow-live-wait {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.25rem;
+  color: var(--ink-soft);
+}
+.flow-live-dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 9999px;
+  background: var(--sea);
+  animation: hr-pulse 1.4s ease-out infinite;
+}
+/* Desktop: the welcome panel is at most half the screen, so size the headline to it. */
+@media (min-width: 768px) {
+  .wl-title {
+    font-size: clamp(2.6rem, 6.2vw, 5.6rem);
+  }
+}
+/* Shown until the stored mode / trip link is read, so nothing flashes before hydration. */
+.wl-cover {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: #f4ecdc;
+}
+
+/* Welcome → app: the paper panel slides away, then the planner rises in. */
+.wl.is-leaving .wl-content {
+  animation: wl-out-down 480ms cubic-bezier(0.6, 0, 0.8, 0.4) both;
+}
+@media (min-width: 768px) {
+  .wl.is-leaving .wl-content {
+    animation-name: wl-out-left;
+  }
+}
+@keyframes wl-out-down {
+  to {
+    translate: 0 105%;
+  }
+}
+@keyframes wl-out-left {
+  to {
+    translate: -105% 0;
+  }
+}
+.flow-panel[inert] {
+  opacity: 0;
+  translate: 0 24px;
+}
+.flow-panel {
+  transition-property: height, max-height, opacity, translate;
+  transition-duration: 280ms, 280ms, 500ms, 600ms;
+  transition-timing-function: cubic-bezier(0.25, 1.15, 0.4, 1), cubic-bezier(0.25, 1.15, 0.4, 1), ease,
+    cubic-bezier(0.2, 0.9, 0.25, 1.1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .wl.is-leaving .wl-content {
+    animation: none;
+  }
+}
+
+/* Welcome: "how it works" */
+.wl-help-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--wl-ink);
+  text-decoration: underline;
+  text-decoration-color: rgb(27 42 51 / 0.3);
+  text-underline-offset: 4px;
+}
+.wl-help-btn:hover {
+  text-decoration-color: var(--wl-coral);
+}
+.wl-help-icon {
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 9999px;
+  border: 1.5px solid var(--wl-ink);
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+.wl-help {
+  display: flex;
+  flex-direction: column;
+  animation: flow-step-in 350ms ease both;
+}
+.wl-help-list {
+  margin-top: 0.5rem;
+  border-top: 1.5px solid var(--wl-ink);
+}
+.wl-help-list li {
+  display: flex;
+  gap: 1rem;
+  padding: 0.7rem 0.25rem;
+  border-bottom: 1px solid rgb(27 42 51 / 0.25);
+}
+.wl-help-title {
+  display: block;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.wl-help-note {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #7c6a48;
+}
+
+/* Centre the welcome content vertically with auto-margin spacers: unlike justify-content: center,
+   they collapse when the content (e.g. the help guide) is taller than the panel, so nothing is
+   pushed off-screen above — it just scrolls. Works in every browser. */
+@media (min-width: 768px) {
+  .wl-content::before,
+  .wl-content::after {
+    content: "";
+    flex: none;
+  }
+  .wl-content::before {
+    margin-top: auto;
+  }
+  .wl-content::after {
+    margin-bottom: auto;
+  }
+}
+
+/* Walk / car switch: the panel version and the welcome version. */
+.flow-travel,
+.wl-travel {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 3px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.flow-travel {
+  background: var(--sand-deep);
+}
+.wl-travel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  align-self: stretch;
+  margin-top: 1.75rem;
+  padding: 0;
+  border-radius: 0;
+}
+.flow-travel button,
+.wl-travel button {
+  padding: 0.35rem 0.9rem;
+  border-radius: 9999px;
+  color: var(--ink-soft);
+  transition: background-color 150ms, color 150ms;
+}
+.flow-travel button.is-on,
+.wl-travel button.is-on {
+  background: var(--sea-deep);
+  color: white;
+}
+.wl-travel .wl-travel-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.9rem 0.5rem 0.8rem;
+  border-radius: 1rem;
+  border: 1.5px solid rgb(27 42 51 / 0.3);
+  background: rgb(255 255 255 / 0.55);
+  color: var(--wl-ink);
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  transition: background-color 150ms, border-color 150ms, transform 150ms;
+}
+.wl-travel .wl-travel-tile:hover {
+  border-color: var(--wl-ink);
+}
+.wl-travel .wl-travel-tile.is-on {
+  background: var(--wl-ink);
+  border-color: var(--wl-ink);
+  color: #fff;
+  box-shadow: 0 8px 20px -10px rgb(27 42 51 / 0.6);
+}
+.wl-travel .wl-travel-tile.is-on .wl-travel-icon {
+  color: var(--gold);
+}
+.wl-travel .wl-travel-tile:focus-visible {
+  outline: 2px solid var(--wl-coral);
+  outline-offset: 2px;
+}
+.wl-travel-icon {
+  width: 2.1rem;
+  height: 2.1rem;
+}
+
+/* Live turn-by-turn instruction. */
+.flow-turn {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 1rem;
+  background: var(--sea-deep);
+  color: white;
+}
+.flow-turn.is-off {
+  background: var(--coral);
+}
+.flow-turn-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.8rem;
+  background: rgb(255 255 255 / 0.14);
+  font-size: 1.75rem;
+  line-height: 1;
+}
+.flow-turn-dist {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.flow-turn-text {
+  display: block;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.flow-compass-btn {
+  display: grid;
+  place-items: center;
+  align-self: flex-end;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink-soft);
+}
+.flow-compass-btn[aria-pressed="true"] {
+  background: var(--sea-deep);
+  color: var(--gold);
+}
+
+.wl-tip {
+  display: block;
+  margin-top: 0.45rem;
+  padding: 0.45rem 0.65rem;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 0.5rem 0.5rem 0;
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--wl-ink);
+}

@@ -1,0 +1,333 @@
+/* On-map visuals: endpoints, POI badges, walker. Prefixed hr- to avoid clashes. */
+
+.hr-endpoint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: grab;
+  touch-action: none;
+}
+.hr-endpoint:active {
+  cursor: grabbing;
+}
+
+.hr-start-ring {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 6px solid #12344d;
+  box-shadow: 0 2px 6px rgb(18 52 77 / 0.35);
+}
+
+.hr-end-pin {
+  filter: drop-shadow(0 3px 4px rgb(18 52 77 / 0.35));
+}
+
+.hr-endpoint-label {
+  position: absolute;
+  top: calc(100% + 2px);
+  white-space: nowrap;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  background: #12344d;
+  color: #fff;
+  font: 600 11px/1.5 var(--font-geist-sans, system-ui), system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 3px rgb(18 52 77 / 0.3);
+  pointer-events: none;
+}
+.hr-endpoint--end .hr-endpoint-label {
+  top: auto;
+  bottom: calc(100% + 2px);
+}
+
+.hr-poi {
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  color: #12344d;
+  border: 2.5px solid #12344d;
+  font: 700 13px/1 var(--font-geist-sans, system-ui), system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 2px 6px rgb(18 52 77 / 0.3);
+  cursor: pointer;
+  transition: transform 150ms ease, background-color 150ms ease, color 150ms ease;
+}
+.hr-poi:hover {
+  transform: scale(1.12);
+}
+.hr-poi:focus-visible {
+  outline: 3px solid #f2b84b;
+  outline-offset: 2px;
+}
+.hr-poi--active {
+  background: #12344d;
+  color: #fff;
+  animation: hr-pulse 1.6s ease-out infinite;
+}
+@keyframes hr-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgb(242 184 75 / 0.75);
+  }
+  100% {
+    box-shadow: 0 0 0 16px rgb(242 184 75 / 0);
+  }
+}
+
+.hr-walker {
+  pointer-events: none;
+}
+.hr-walker-body {
+  transform-origin: 50% 100%;
+  transition: transform 200ms ease;
+}
+.hr-walker--left .hr-walker-body {
+  transform: scaleX(-1);
+}
+.hr-walker--walking svg {
+  animation: hr-bob 0.42s ease-in-out infinite alternate;
+}
+.hr-walker--walking .hr-walker-leg--l {
+  animation: hr-step 0.42s ease-in-out infinite alternate;
+}
+.hr-walker--walking .hr-walker-leg--r {
+  animation: hr-step 0.42s ease-in-out infinite alternate-reverse;
+}
+.hr-walker-leg {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+}
+@keyframes hr-bob {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-3px);
+  }
+}
+@keyframes hr-step {
+  from {
+    transform: rotate(-22deg);
+  }
+  to {
+    transform: rotate(22deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hr-poi--active,
+  .hr-walker--walking svg,
+  .hr-walker--walking .hr-walker-leg--l,
+  .hr-walker--walking .hr-walker-leg--r {
+    animation: none;
+  }
+  .hr-poi--active {
+    box-shadow: 0 0 0 5px rgb(242 184 75 / 0.8);
+  }
+}
+
+/* Mobile: the planner is a bottom sheet, so keep only the locate button, top-right.
+   Pinch handles zoom/rotate. Attribution moves into the planner sheet (.flow-credits). */
+@media (max-width: 767px) {
+  .maplibregl-ctrl-bottom-right {
+    top: 0;
+    bottom: auto;
+  }
+  .maplibregl-ctrl-attrib,
+  .maplibregl-ctrl-scale,
+  .maplibregl-ctrl-group:has(.maplibregl-ctrl-zoom-in) {
+    display: none;
+  }
+}
+
+/* Ferry legs: the explorer hops into a little boat that rocks on the waves. */
+.hr-walker-body {
+  position: relative;
+}
+.hr-boat {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  translate: -50% 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 250ms ease;
+}
+.hr-walker--boat .hr-boat {
+  opacity: 1;
+}
+.hr-walker--boat .hr-walker-leg,
+.hr-walker--boat ellipse {
+  opacity: 0;
+}
+.hr-walker--boat.hr-walker--walking svg:first-child {
+  animation: hr-rock 1.1s ease-in-out infinite;
+}
+.hr-walker--boat.hr-walker--walking .hr-boat {
+  animation: hr-rock 1.1s ease-in-out infinite;
+}
+.hr-boat-wake {
+  opacity: 0.85;
+  animation: hr-wake 0.9s linear infinite;
+}
+@keyframes hr-rock {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-2px) rotate(5deg); }
+}
+@keyframes hr-wake {
+  from { transform: translateX(0); opacity: 0.9; }
+  to { transform: translateX(-6px); opacity: 0.2; }
+}
+
+/* Level 11: a gentle wobble (long trips get dizzying otherwise) but a much sillier explorer:
+   propeller cap, googly eyes, a grin and a rainbow cape. */
+.hr-crazy-only {
+  display: none;
+}
+.hr-walker--crazy .hr-crazy-only {
+  display: inline;
+}
+.hr-walker--crazy .hr-eye-normal {
+  display: none;
+}
+.hr-propeller {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hr-spin 0.18s linear infinite alternate;
+}
+.hr-cape {
+  transform-box: fill-box;
+  transform-origin: 100% 0;
+}
+.hr-walker--crazy.hr-walker--walking .hr-cape {
+  animation: hr-flap 0.3s ease-in-out infinite alternate;
+}
+.hr-walker--crazy.hr-walker--walking:not(.hr-walker--boat) svg:first-child {
+  animation: hr-crazy 0.42s ease-in-out infinite alternate;
+}
+@keyframes hr-crazy {
+  from { transform: translateY(0) rotate(-5deg); }
+  to { transform: translateY(-3px) rotate(5deg); }
+}
+@keyframes hr-spin {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0.12); }
+}
+@keyframes hr-flap {
+  from { transform: skewY(-8deg) scaleX(0.9); }
+  to { transform: skewY(6deg) scaleX(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hr-walker--boat.hr-walker--walking svg:first-child,
+  .hr-walker--boat.hr-walker--walking .hr-boat,
+  .hr-boat-wake,
+  .hr-walker--crazy.hr-walker--walking:not(.hr-walker--boat) svg:first-child,
+  .hr-propeller,
+  .hr-walker--crazy.hr-walker--walking .hr-cape {
+    animation: none;
+  }
+}
+
+/* Photo pins on the welcome screen's example trip. */
+.hr-photo-pin {
+  pointer-events: none;
+}
+.hr-photo-pin-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: hr-photo-pop 520ms cubic-bezier(0.3, 1.5, 0.5, 1) both;
+  transform-origin: 50% 100%;
+}
+.hr-photo-pin-img {
+  display: block;
+  width: 58px;
+  height: 58px;
+  overflow: hidden;
+  border-radius: 9999px;
+  border: 3px solid #fff;
+  background: #12344d;
+  box-shadow: 0 6px 16px rgb(18 52 77 / 0.35);
+}
+.hr-photo-pin-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hr-photo-pin-name {
+  margin-top: 4px;
+  max-width: 130px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: #fff;
+  color: #12344d;
+  font: 650 11px/1.35 var(--font-geist-sans, system-ui), system-ui, sans-serif;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 6px rgb(18 52 77 / 0.25);
+}
+.hr-photo-pin-inner::after {
+  content: "";
+  width: 2px;
+  height: 10px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(18 52 77 / 0.3);
+}
+@keyframes hr-photo-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4) translateY(10px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hr-photo-pin-inner {
+    animation: none;
+  }
+}
+
+/* Car trips: the explorer drives a small car (boat still wins on water). */
+.hr-car {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  translate: -50% 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.hr-walker--car:not(.hr-walker--boat) .hr-car {
+  opacity: 1;
+}
+.hr-walker--car:not(.hr-walker--boat) svg:first-child {
+  opacity: 0;
+  animation: none !important;
+}
+.hr-walker--car.hr-walker--walking .hr-car {
+  animation: hr-drive 0.35s ease-in-out infinite alternate;
+}
+.hr-car-wheel {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.hr-walker--car.hr-walker--walking .hr-car-wheel {
+  animation: hr-wheel 0.4s linear infinite;
+}
+@keyframes hr-drive {
+  from { transform: translateY(0); }
+  to { transform: translateY(-1.5px); }
+}
+@keyframes hr-wheel {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hr-walker--car.hr-walker--walking .hr-car,
+  .hr-walker--car.hr-walker--walking .hr-car-wheel {
+    animation: none;
+  }
+}

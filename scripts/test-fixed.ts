@@ -1,0 +1,10 @@
+import { readFileSync } from "node:fs";
+import { buildGraph } from "../src/lib/routing/graph.ts";
+import { computeAdventure } from "../src/lib/routing/adventure-core.ts";
+const g = buildGraph(JSON.parse(readFileSync("public/data/helsinki.json", "utf8")));
+const a: [number, number] = [24.9431, 60.1707], b: [number, number] = [24.9567, 60.1576];
+const r1 = computeAdventure(g, a, b, "historic", Math.random, 3);
+const r2 = computeAdventure(g, a, b, "historic", Math.random, 3, r1.stops.map((s) => s.lngLat));
+console.log("first :", r1.stops.map((s) => s.name).join(" / "), r1.distanceM);
+console.log("shared:", r2.stops.map((s) => s.name).join(" / "), r2.distanceM);
+console.log("same:", JSON.stringify(r1.stops.map((s) => s.id)) === JSON.stringify(r2.stops.map((s) => s.id)));

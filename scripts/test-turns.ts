@@ -1,0 +1,11 @@
+import { readFileSync } from "node:fs";
+import { buildGraph } from "../src/lib/routing/graph.ts";
+import { computeAdventure } from "../src/lib/routing/adventure-core.ts";
+import { buildManeuvers, nextManeuver, routeProgress, fmtDistance } from "../src/lib/routing/turns.ts";
+const g = buildGraph(JSON.parse(readFileSync("public/data/helsinki.json", "utf8")));
+const r = computeAdventure(g, [24.9431, 60.1707], [24.9567, 60.1576], "historic", Math.random, 2);
+const ms = buildManeuvers(r.coords, r.stops.map((s) => ({ lngLat: s.lngLat, name: s.name })));
+console.log("route", r.distanceM, "m, maneuvers", ms.length);
+for (const m of ms.slice(0, 12)) console.log(Math.round(m.along), m.icon, m.text);
+const p = routeProgress(r.coords, r.coords[40]);
+console.log("progress at coord 40:", Math.round(p.along), "off", p.offRoute.toFixed(1), "next:", (() => { const n = nextManeuver(ms, p.along); return n ? fmtDistance(n.dist) + " " + n.m.text : null; })());
